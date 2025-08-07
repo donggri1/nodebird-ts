@@ -2,23 +2,24 @@
 
 {% block content %}
 <div class="container">
-    <h2>새 글 작성</h2>
-    <form action="/community" method="post">
+    {# isEdit 변수에 따라 제목 변경 #}
+    <h2>{% if isEdit %}게시글 수정{% else %}새 글 작성{% endif %}</h2>
+    
+    {# isEdit 변수에 따라 폼 액션 및 숨겨진 _method 필드 추가 #}
+    <form action="{% if isEdit %}/community/{{ post.id }}?_method=PUT{% else %}/community{% endif %}" method="post">
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
-            <input type="text" id="title" name="title" class="form-control" required>
+            {# post 객체가 있으면 제목을 미리 채워 넣음 #}
+            <input type="text" id="title" name="title" class="form-control" value="{{ post.title if post else '' }}" required>
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">내용</label>
-            <textarea id="content" name="content" rows="5" class="form-control" required></textarea>
+            {# post 객체가 있으면 내용을 미리 채워 넣음 #}
+            <textarea id="content" name="content" rows="5" class="form-control" required>{{ post.content if post else '' }}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary">저장</button>
+        {# isEdit 변수에 따라 버튼 텍스트 변경 #}
+        <button type="submit" class="btn btn-primary">{% if isEdit %}수정{% else %}작성{% endif %}</button>
         <a href="/community" class="btn btn-secondary">취소</a>
     </form>
 </div>
 {% endblock %}
-
-
-{% extends 'layout.html' %}
-
-

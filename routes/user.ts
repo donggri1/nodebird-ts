@@ -6,4 +6,4 @@ const  router = express.Router();
 
 router.post('/:id/follow',isLoggedIn,follow);
 
-module.exports =router;
+export default router;
