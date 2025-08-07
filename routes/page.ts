@@ -1,5 +1,5 @@
 import express from  'express';
-import {renderJoin,renderMain,renderProfile,renderHashtag ,renderCommunity} from  '../controllers/page';
+import {renderJoin,renderMain,renderProfile,renderHashtag ,renderCommunity, renderCommunityForm} from  '../controllers/page';
 import { isLoggedIn, isNotLoggedIn } from  '../middlewares';
 const  router =  express.Router();
 
@@ -16,5 +16,6 @@ router.get('/join',isNotLoggedIn,renderJoin);
 router.get('/',renderMain);
 router.get('/hashtag',renderHashtag); // hashtag?hashtag=고양이이
 router.get('/community',renderCommunity); // 커뮤니티 페이지
+router.get('/community/write', isLoggedIn, renderCommunityForm);
 
 export default router;

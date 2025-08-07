@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>새 글 작성</h2>
+    <form action="/community" method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" id="title" name="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea id="content" name="content" rows="5" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">저장</button>
+        <a href="/community" class="btn btn-secondary">취소</a>
+    </form>
+</div>
+{% endblock %}
+
+
+{% extends 'layout.html' %}
+
+

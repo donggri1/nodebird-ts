@@ -36,8 +36,8 @@ class Hashtag extends Model{
 
     }
 
-    static associate(){
-        Hashtag.belongsToMany(Post, { through: 'PostHashtag' });
+    static associate(db: any){
+        db.Hashtag.belongsToMany(db.Post, { through: 'PostHashtag' });
     }
 }
 

@@ -15,6 +15,8 @@ import postRouter from './routes/post';
 import {sequelize} from './models';
 import userRouter from './routes/user';
 
+import communityRouter from './routes/community';
+
 const app = express();
 passportConfig();
 app.set('port',process.env.PORT || 8001);
@@ -57,6 +59,7 @@ app.use('/',pageRouter);
 app.use('/auth',authRouter);
 app.use('/post',postRouter);
 app.use('/user',userRouter);
+app.use('/community', communityRouter);
 
 app.use((req,res,next)=>{
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다..`);

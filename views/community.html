@@ -1,10 +1,61 @@
 {% extends 'layout.html' %}
 {% block content %}
-
 <div class="container">
     <h2>자유게시판</h2>
-    <p>여기는 커뮤니티 페이지입니다.</p>
-    <p>여기에 커뮤니티 관련 기능을 추가할 수 있습니다.</p>
+    <a href="/community/write" class="btn btn-primary mb-3">새 글 작성</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th></th> {# 수정/삭제 버튼을 위한 빈 헤더 #}
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td>{{ post.title }}</td>
+                <td>{{ post.User.nick }}</td>
+                <td>{{ post.createdAt.toLocaleString() }}</td>
+                <td>
+                    {# 현재 로그인한 사용자가 게시글 작성자인 경우에만 수정/삭제 버튼을 표시 #}
+                    {% if user and user.id === post.UserId %}
+                    <a href="/community/edit/{{ post.id }}" class="btn btn-sm btn-info">수정</a>
+                    <button class="btn btn-sm btn-danger delete-btn" data-post-id="{{ post.id }}">삭제</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
-{% endblock%}
+<script>
+    // 삭제 버튼 클릭 시 동작하는 JavaScript 코드
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const postId = e.target.dataset.postId; // data-post-id 속성에서 게시글 ID를 가져옵니다.
+            if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) { // 사용자에게 삭제 확인 메시지를 띄웁니다.
+                try {
+                    // fetch API를 사용하여 DELETE 요청을 보냅니다.
+                    const response = await fetch(`/community/${postId}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) { // 요청이 성공하면 (HTTP 상태 코드 200-299)
+                        alert('게시글이 삭제되었습니다.');
+                        window.location.reload(); // 페이지를 새로고침하여 변경된 목록을 보여줍니다.
+                    } else { // 요청이 실패하면
+                        const errorText = await response.text();
+                        alert(`게시글 삭제 실패: ${errorText}`);
+                    }
+                } catch (error) {
+                    console.error('삭제 중 오류 발생:', error);
+                    alert('게시글 삭제 중 오류가 발생했습니다.');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
