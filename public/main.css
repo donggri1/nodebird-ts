@@ -255,3 +255,8 @@
     font-size: 14px;
   }
   
+.post-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
+}

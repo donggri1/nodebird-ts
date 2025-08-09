@@ -71,7 +71,6 @@ const renderCommunity:RequestHandler = async(req,res,next)=>{
             },
             order: [['createdAt', 'DESC']],
         });
-        console.log(posts);
         res.render('community', {// 커뮤니티 페이지 렌더링
             title: '자유게시판 - NodeBird',
             posts: posts,

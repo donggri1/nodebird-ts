@@ -63,6 +63,7 @@ class User extends Sequelize.Model{
 
     static associate(db: any){
         db.User.hasMany(db.Post);
+        db.User.hasMany(db.Comment); // Comment와의 관계 추가
         db.User.belongsToMany(db.User,{
             foreignKey:'followingId',
             as : 'Followers',

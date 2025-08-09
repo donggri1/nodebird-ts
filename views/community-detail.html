@@ -6,12 +6,15 @@
     <h1>{{post.title}}</h1>
     <div class="post-meta">
       <span>작성자: {{post.User.nick}}</span>
-      <span>작성일: {{post.createdAt}}</span>
+      <span>작성일: {{post.createdAt.toLocaleString()}}</span>
     </div>
   </div>
   <hr>
   <div class="post-content">
     <p>{{post.content}}</p>
+    {% if post.img %}
+      <img src="/uploads/{{post.img}}" alt="게시글 이미지" class="post-image">
+    {% endif %}
   </div>
   <hr>
   <div class="post-actions">
@@ -23,6 +26,43 @@
         <button id="delete-btn" type="submit" class="btn">삭제</button>
       </form>
     {% endif %}
+  </div>
+
+  {# Comment Section #}
+  <div class="comment-section mt-4">
+    <h3>댓글</h3>
+    {% if user %} {# Only show comment form if user is logged in #}
+    <form action="/community/{{post.id}}/comment" method="post" class="mb-4">
+      <div class="form-group">
+        <textarea name="content" class="form-control" rows="3" placeholder="댓글을 입력하세요." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">댓글 작성</button>
+    </form>
+    {% else %}
+    <p>댓글을 작성하려면 <a href="/auth/login">로그인</a>해주세요.</p>
+    {% endif %}
+
+    <div class="comments-list">
+      {% if post.Comments and post.Comments.length > 0 %}
+        {% for comment in post.Comments %}
+          <div class="comment-item border p-3 mb-2 rounded">
+            <div class="comment-meta d-flex justify-content-between align-items-center">
+              <strong>{{ comment.User.nick }}</strong>
+              <small>{{ comment.createdAt.toLocaleString() }}</small>
+            </div>
+            <p class="comment-content mt-2">{{ comment.content }}</p>
+            {% if user and user.id == comment.UserId %}
+              <form action="/community/{{post.id}}/comment/{{comment.id}}" method="post" style="display: inline;">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>아직 댓글이 없습니다.</p>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

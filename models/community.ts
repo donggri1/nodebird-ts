@@ -43,6 +43,7 @@ class Community extends Model {
 
     static associate(db:any) { // db 객체를 받아서 관계를 설정
         db.Community.belongsTo(db.User, {foreignKey : 'UserId', targetKey : 'id'}); // User와 1:N 관계 설정
+        db.Community.hasMany(db.Comment, { foreignKey: 'CommunityId', sourceKey: 'id' });
         // Community 모델은 User 모델에 belongsTo 관계를 가짐
         // foreignKey는 Community 모델의 UserId 컬럼을 참조하고, targetKey는 User 모델의 id 컬럼을 참조
     }

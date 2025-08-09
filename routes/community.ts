@@ -2,11 +2,11 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { createCommunityPost, getCommunityPost, updateCommunityPost, deleteCommunityPost, renderEditForm, createComment, deleteComment } from '../controllers/community';
 import { isLoggedIn } from '../middlewares';
-import { createCommunityPost, getCommunityPost, updateCommunityPost, deleteCommunityPost, renderEditForm } from '../controllers/community';
 
 const router = express.Router(); // 커뮤니티 관련 라우터
-
+console.log('community router loaded');
 try {
   fs.readdirSync('uploads');
 } catch (error) {
@@ -41,5 +41,11 @@ router.put('/:id', isLoggedIn, updateCommunityPost); // 특정 ID의 커뮤니�
 
 // DELETE /community/:id - 게시글 삭제
 router.delete('/:id', isLoggedIn, deleteCommunityPost); // 특정 ID의 커뮤니티 글 삭제
+
+// POST /community/:id/comment - 댓글 작성
+router.post('/:id/comment', isLoggedIn, createComment);
+
+// DELETE /community/:id/comment/:commentId - 댓글 삭제
+router.delete('/:id/comment/:commentId', isLoggedIn, deleteComment);
 
 export default router; // 커뮤니티 라우터

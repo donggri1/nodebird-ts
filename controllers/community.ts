@@ -5,7 +5,8 @@ import { User } from '../models';
 const createCommunityPost: RequestHandler = async (req, res, next) => {
     const { title, content } = req.body;
     const userId = req.user?.id;
-    const img = req.file?.path;
+    const img = req.file?.filename;
+    console.log(img,"여기입니다.");
 
     if (!userId) {
         return res.status(403).send('로그인이 필요합니다.');
@@ -91,22 +92,33 @@ const deleteCommunityPost: RequestHandler = async (req, res, next) => {
 
 
 const getCommunityPost: RequestHandler = async (req, res, next) => {
+    console.log('getCommunityPost called with id:', req.params.id);
     try {
         const post = await Community.findOne({
             where: { id: req.params.id },
             include: [{
                 model: User,
                 attributes: ['id', 'nick'],
-            }],
+            },
+            {
+                model: Comment,
+                include: [{
+                    model: User,
+                    attributes: ['id', 'nick'],
+                }],
+                order: [['createdAt', 'ASC']],
+            },
+            ],
         });
+        console.log('여기가 이미지',post?.img )
 
         if (!post) {
             return res.status(404).send('게시글을 찾을 수 없습니다.');
         }
-
         res.render('community-detail', {
             title: post.title,
             post,
+            
         });
     } catch (error) {
         console.error(error);
@@ -136,5 +148,63 @@ const renderEditForm: RequestHandler = async (req, res, next) => {
     }
 };
 
-export { createCommunityPost, getCommunityPost, updateCommunityPost, deleteCommunityPost, renderEditForm };
+import Comment from '../models/comment'; // Comment 모델 import 추가
+
+const createComment: RequestHandler = async (req, res, next) => {
+    try {
+        const postId = parseInt(req.params.id as string, 10);
+        const { content } = req.body;
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(403).send('로그인이 필요합니다.');
+        }
+
+        if (!content) {
+            return res.status(400).send('댓글 내용을 입력해주세요.');
+        }
+
+        await Comment.create({
+            content,
+            UserId: userId,
+            CommunityId: postId,
+        });
+
+        res.redirect(`/community/${postId}`);
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+const deleteComment: RequestHandler = async (req, res, next) => {
+    try {
+        const commentId = parseInt(req.params.commentId as string, 10);
+        const postId = parseInt(req.params.id as string, 10);
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(403).send('로그인이 필요합니다.');
+        }
+
+        const comment = await Comment.findOne({ where: { id: commentId } });
+
+        if (!comment) {
+            return res.status(404).send('댓글을 찾을 수 없습니다.');
+        }
+
+        if (comment.UserId !== userId) {
+            return res.status(403).send('댓글을 삭제할 권한이 없습니다.');
+        }
+
+        await Comment.destroy({ where: { id: commentId } });
+
+        res.redirect(`/community/${postId}`);
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+export { createCommunityPost, getCommunityPost, updateCommunityPost, deleteCommunityPost, renderEditForm, createComment, deleteComment };
 

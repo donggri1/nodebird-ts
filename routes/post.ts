@@ -29,7 +29,7 @@ const upload = multer({
 });
 
 // POST /post/img
-router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage);
+router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage); 
 
 // POST /post
 const upload2 = multer();

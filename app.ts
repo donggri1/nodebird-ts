@@ -40,20 +40,16 @@ sequelize.sync({ force: false }) // force: true로 설정하면 기존 테이블
 
 app.use(morgan('dev')); // 로그를 남김, dev, combined, common, short, tiny , morgan(format) 형식으로도 가능, 개발시 dev, 배포시 combined
 app.use(express.static(path.join(__dirname,'public'))); // 정적 파일 제공
-app.use('/img',express.static(path.join(__dirname,'uploads'))); // 정적 파일 제공
+// app.use('/img',express.static(path.join(__dirname,'uploads'))); // 정적 파일 제공
+app.use('/uploads',express.static(path.join(__dirname,'uploads'))); // 정적 파일 제공
 app.use(express.json());//   body-parser 대체, json 형식으로 데이터를 받음
-import methodOverride from 'method-override'; // 추가
-
-// ... (기존 코드) ...
-
 app.use(express.urlencoded({extended:false})); // body-parser 대체
-app.use(methodOverride('_method')); // 추가: _method 쿼리 파라미터 또는 폼 필드를 사용하여 HTTP 메서드를 오버라이드
 app.use(cookieParser(process.env.COOKIE_SECRET)); // 쿠키를 암호화 하기 위한 키값
 
 app.use(session({
     resave:false,
     saveUninitialized:false,// 세션에 저장할 내역이 없어도 저장할지 물어봄
-    secret:process.env.COOKIE_SECRET!, // 쿠키를 암호화 하기 위한 키값
+    secret:process.env.COOKIE_SECRET!, // 쿠키를 암호화 req 하기 위한 키값
     cookie:{
         httpOnly:true,
         secure:false,
@@ -63,6 +59,8 @@ app.use(session({
 app.use(passport.initialize()) ;// passport를 초기화, req 객체에 passport 설정을 심음
 app.use(passport.session()); // express-session 보다 아래에 있어야함, 세션을 사용하기 때문에
 
+import methodOverride from 'method-override'; // 추가
+app.use(methodOverride('_method')); // 추가: _method 쿼리 파라미터 또는 폼 필드를 사용하여 HTTP 메서드를 오버라이드
 
 app.use('/',pageRouter);
 app.use('/auth',authRouter);
