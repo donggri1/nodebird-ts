@@ -61,7 +61,7 @@ app.use(passport.session()); // express-session 보다 아래에 있어야함, �
 
 import methodOverride from 'method-override'; // 추가
 app.use(methodOverride('_method')); // 추가: _method 쿼리 파라미터 또는 폼 필드를 사용하여 HTTP 메서드를 오버라이드
-
+console.log("newBranch");
 app.use('/',pageRouter);
 app.use('/auth',authRouter);
 app.use('/post',postRouter);
