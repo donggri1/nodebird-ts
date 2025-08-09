@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="post-header">
+    <h1>{{post.title}}</h1>
+    <div class="post-meta">
+      <span>작성자: {{post.User.nick}}</span>
+      <span>작성일: {{post.createdAt}}</span>
+    </div>
+  </div>
+  <hr>
+  <div class="post-content">
+    <p>{{post.content}}</p>
+  </div>
+  <hr>
+  <div class="post-actions">
+    <a href="/community" class="btn">목록으로</a>
+    {% if user and user.id == post.UserId %}
+      <a href="/community/{{post.id}}/edit" class="btn">수정</a>
+      <form id="delete-form" action="/community/{{post.id}}" method="post" style="display: inline;">
+        <input type="hidden" name="_method" value="DELETE">
+        <button id="delete-btn" type="submit" class="btn">삭제</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

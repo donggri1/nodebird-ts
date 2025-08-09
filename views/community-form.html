@@ -6,7 +6,7 @@
     <h2>{% if isEdit %}게시글 수정{% else %}새 글 작성{% endif %}</h2>
     
     {# isEdit 변수에 따라 폼 액션 및 숨겨진 _method 필드 추가 #}
-    <form action="{% if isEdit %}/community/{{ post.id }}?_method=PUT{% else %}/community{% endif %}" method="post">
+    <form action="{% if isEdit %}/community/{{ post.id }}?_method=PUT{% else %}/community{% endif %}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
             {# post 객체가 있으면 제목을 미리 채워 넣음 #}
@@ -16,6 +16,14 @@
             <label for="content" class="form-label">내용</label>
             {# post 객체가 있으면 내용을 미리 채워 넣음 #}
             <textarea id="content" name="content" rows="5" class="form-control" required>{{ post.content if post else '' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="img" class="form-label">이미지</label>
+            <input type="file" id="img" name="img" class="form-control">
+            {# 이미지가 있을 경우 미리보기 표시 #}
+            {% if post and post.img %}
+                <img src="/uploads/{{ post.img }}" alt="게시글 이미지" class="img-thumbnail mt-2" style="max-width: 100%;">
+            {% endif %}
         </div>
         {# isEdit 변수에 따라 버튼 텍스트 변경 #}
         <button type="submit" class="btn btn-primary">{% if isEdit %}수정{% else %}작성{% endif %}</button>

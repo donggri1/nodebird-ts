@@ -7,6 +7,8 @@ class Community extends Model {
     public id! : number; 
     public title! : string; 
     public content! : string; 
+    public img? : string; // 이미지 파일 경로, 선택적 필드이므로 ? 사용
+
 
     public readonly createdAt! : Date; 
     public readonly updatedAt! : Date; 
@@ -22,6 +24,10 @@ class Community extends Model {
             content:{
                 type : DataTypes.TEXT,
                 allowNull: false,
+            },
+            img: {
+                type: DataTypes.STRING(200),
+                allowNull: true,
             },
         },{
             sequelize,

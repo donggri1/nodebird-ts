@@ -25,8 +25,12 @@ nunjucks.configure('views',{
     express:app,
     watch:true,
 });
-
-sequelize.sync({ force: false })
+// 데이터베이스 연결
+// sequelize.sync()는 데이터베이스와 모델을 동기화합니다.
+// force: true 옵션을 사용하면 기존 테이블을 삭제하고 새로 생성합니다.
+// 개발 중에는 유용하지만, 배포 시에는 false로 설정해야 합니다.
+// sequelize.sync()는 비동기 함수이므로, then()과 catch()를 사용
+sequelize.sync({ force: false }) // force: true로 설정하면 기존 테이블을 삭제하고 새로 생성합니다. 배포시에는 false로 설정해야 합니다. 하는 이유는 개발 중에만 테이블을 새로 만들기 위함입니다.
   .then(() => {
     console.log('데이터베이스 연결 성공');
   })

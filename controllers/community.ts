@@ -5,6 +5,7 @@ import { User } from '../models';
 const createCommunityPost: RequestHandler = async (req, res, next) => {
     const { title, content } = req.body;
     const userId = req.user?.id;
+    const img = req.file?.path;
 
     if (!userId) {
         return res.status(403).send('로그인이 필요합니다.');
@@ -14,6 +15,7 @@ const createCommunityPost: RequestHandler = async (req, res, next) => {
         await Community.create({
             title,
             content,
+            img,
             UserId: userId,
         });
         res.redirect('/community');
@@ -87,4 +89,52 @@ const deleteCommunityPost: RequestHandler = async (req, res, next) => {
     }
 };
 
-export  { createCommunityPost, updateCommunityPost, deleteCommunityPost };
+
+const getCommunityPost: RequestHandler = async (req, res, next) => {
+    try {
+        const post = await Community.findOne({
+            where: { id: req.params.id },
+            include: [{
+                model: User,
+                attributes: ['id', 'nick'],
+            }],
+        });
+
+        if (!post) {
+            return res.status(404).send('게시글을 찾을 수 없습니다.');
+        }
+
+        res.render('community-detail', {
+            title: post.title,
+            post,
+        });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+
+
+const renderEditForm: RequestHandler = async (req, res, next) => {
+    try {
+        const post = await Community.findOne({ where: { id: req.params.id } });
+        if (!post) {
+            return res.status(404).send('게시글을 찾을 수 없습니다.');
+        }
+        if (post.UserId !== req.user?.id) {
+            return res.status(403).send('게시글을 수정할 권한이 없습니다.');
+        }
+        res.render('community-form', {
+            title: '게시글 수정',
+            post,
+            isEdit: true,
+        });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+export { createCommunityPost, getCommunityPost, updateCommunityPost, deleteCommunityPost, renderEditForm };
+
