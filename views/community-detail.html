@@ -21,10 +21,7 @@
     <a href="/community" class="btn">목록으로</a>
     {% if user and user.id == post.UserId %}
       <a href="/community/{{post.id}}/edit" class="btn">수정</a>
-      <form id="delete-form" action="/community/{{post.id}}" method="post" style="display: inline;">
-        <input type="hidden" name="_method" value="DELETE">
-        <button id="delete-btn" type="submit" class="btn">삭제</button>
-      </form>
+      <button class="btn btn-sm btn-danger delete-btn" data-post-id="{{ post.id }}">삭제</button>
     {% endif %}
   </div>
 
@@ -65,4 +62,31 @@
     </div>
   </div>
 </div>
+
+<script>
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        debugger;
+        button.addEventListener('click', async (e) => {
+            const postId = e.target.dataset.postId;
+            if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+                try {
+                    const response = await fetch(`/community/${postId}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('게시글이 삭제되었습니다.');
+                        window.location.href = '/community';
+                    } else {
+                        const errorText = await response.text();
+                        alert(`게시글 삭제 실패: ${errorText}`);
+                    }
+                } catch (error) {
+                    console.error('삭제 중 오류 발생:', error);
+                    alert('게시글 삭제 중 오류가 발생했습니다.');
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
