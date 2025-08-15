@@ -2,6 +2,7 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import session from 'express-session';
+import User from './models/user'; // User 모델을 가져옵니다.
 
 // Socket.io를 이용한 실시간 채팅 서버 설정
 export default (server: HttpServer, app: any, sessionMiddleware: session.Store) => {
@@ -20,43 +21,64 @@ export default (server: HttpServer, app: any, sessionMiddleware: session.Store) 
     io.use(wrap(sessionMiddleware));
 
     // 클라이언트 연결 이벤트 처리
-    io.on('connection', (socket: any) => {
+    io.on('connection', async (socket: any) => {
         console.log('새로운 클라이언트 접속', socket.id);
         const req = socket.request;
+        console.log(req.session);
 
-        // 로그인 체크
-        if (!req.session.user) {
-            socket.emit('error', '로그인이 필요합니다.');
+        try {
+
+                const userId = req.session.passport?.user;
+                if (!userId) {
+                    socket.emit('error', '로그인이 필요합니다.');
+                    socket.disconnect();
+                    return;
+                }
+
+                const user = await User.findOne({ where: { id: userId } });
+                console.log(user, '사용자 정보');
+                if (!user) {
+                    socket.emit('error', '사용자 정보를 찾을 수 없습니다.');
+                    socket.disconnect();
+                    return;
+                }
+
+                socket.user = user;
+
+                // 사용자 입장 처리
+                console.log(`${socket.user.nick}님이 입장하셨습니다.`);
+                io.emit('join', {
+                    user: 'system',
+                    chat: `${socket.user.nick}님이 입장하셨습니다.`,
+                });
+
+                // 연결 종료 이벤트 처리
+                socket.on('disconnect', () => {
+                    console.log('클라이언트 접속 해제', socket.id);
+                    if (req.session && req.session.user) {
+                        io.emit('exit', {
+                            user: 'system',
+                            chat: `${socket.user.nick}님이 퇴장하셨습니다.`,
+                        });
+                    }
+                });
+
+                // 채팅 메시지 이벤트 처리
+                socket.on('chat', (data: any) => {
+                    // [수정] req.session 대신 socket.user 객체의 존재 여부를 확인합니다.
+                    if (socket.user) {
+                        io.emit('chat', {
+                            // [최종 수정] .toJSON()을 호출하여 순수한 데이터 객체만 클라이언트로 전송합니다.
+                            user: socket.user.toJSON(),
+                            chat: data.chat,
+                        });
+                    }
+                });
+        }catch (error) {
+            console.error('소켓 연결 중 오류 발생:', error);
+            socket.emit('error', '소켓 연결 중 오류가 발생했습니다.');
             socket.disconnect();
             return;
         }
-
-        // 사용자 입장 처리
-        console.log(`${req.session.user.nick}님이 입장하셨습니다.`);
-        io.emit('join', {
-            user: 'system',
-            chat: `${req.session.user.nick}님이 입장하셨습니다.`,
-        });
-
-        // 연결 종료 이벤트 처리
-        socket.on('disconnect', () => {
-            console.log('클라이언트 접속 해제', socket.id);
-            if (req.session && req.session.user) {
-                io.emit('exit', {
-                    user: 'system',
-                    chat: `${req.session.user.nick}님이 퇴장하셨습니다.`,
-                });
-            }
-        });
-
-        // 채팅 메시지 이벤트 처리
-        socket.on('chat', (data: any) => {
-            if (req.session && req.session.user) {
-                io.emit('chat', {
-                    user: req.session.user,
-                    chat: data.chat,
-                });
-            }
-        });
     });
 };

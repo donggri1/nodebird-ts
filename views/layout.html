@@ -57,7 +57,94 @@
         }
       };
     </script>
-    {% block script %}
+        {% block script %}
     {% endblock %}
+    {% if user and user.id %}
+    <div id="chat-container">
+        <div id="chat-header">
+            <h2>실시간 채팅</h2>
+            <button id="chat-close-btn">X</button>
+        </div>
+        <div id="chat-messages"></div>
+        <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="메시지를 입력하세요" autocomplete="off" />
+            <button type="submit">send</button>
+        </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io({ path: '/socket.io' });
+
+        const chatContainer = document.getElementById('chat-container');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const closeBtn = document.getElementById('chat-close-btn');
+
+        // 초기에 채팅창 숨김
+        chatContainer.style.display = 'none';
+
+        // 채팅창을 열기 위한 플로팅 버튼 (예시)
+        const chatOpenBtn = document.createElement('button');
+        chatOpenBtn.innerText = '채팅';
+        chatOpenBtn.id = 'chat-open-btn';
+        document.body.appendChild(chatOpenBtn);
+
+        chatOpenBtn.addEventListener('click', () => {
+            chatContainer.style.display = 'flex';
+            chatOpenBtn.style.display = 'none';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            chatContainer.style.display = 'none';
+            chatOpenBtn.style.display = 'block';
+        });
+
+        socket.on('connect', () => {
+            console.log('서버에 연결되었습니다.');
+        });
+
+        socket.on('error', (error) => {
+            alert(error);
+        });
+
+        socket.on('join', (data) => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('system-message');
+            messageElement.textContent = data.chat;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        socket.on('exit', (data) => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('system-message');
+            messageElement.textContent = data.chat;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        socket.on('chat', (data) => {
+            const messageElement = document.createElement('div');
+            const userElement = document.createElement('span');
+            userElement.textContent = data.user.nick + ': ';
+            userElement.style.fontWeight = 'bold';
+            messageElement.appendChild(userElement);
+            const chatElement = document.createElement('span');
+            chatElement.textContent = data.chat;
+            messageElement.appendChild(chatElement);
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (chatInput.value) {
+                socket.emit('chat', { chat: chatInput.value });
+                chatInput.value = '';
+            }
+        });
+    </script>
+    {% endif %}
   </body>
 </html>
