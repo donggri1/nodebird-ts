@@ -35,6 +35,7 @@
     // 삭제 버튼 클릭 시 동작하는 JavaScript 코드
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', async (e) => {
+            debugger;
             const postId = e.target.dataset.postId; // data-post-id 속성에서 게시글 ID를 가져옵니다.
             if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) { // 사용자에게 삭제 확인 메시지를 띄웁니다.
                 try {

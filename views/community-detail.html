@@ -52,7 +52,7 @@
             </div>
             <p class="comment-content mt-2">{{ comment.content }}</p>
             {% if user and user.id == comment.UserId %}
-              <form action="/community/{{post.id}}/comment/{{comment.id}}" method="post" style="display: inline;">
+               <form action="/community/{{post.id}}/comment/{{comment.id}}" method="post" style="display: inline;">
                 <input type="hidden" name="_method" value="DELETE">
                 <button type="submit" class="btn btn-sm btn-danger">삭제</button>
               </form>
