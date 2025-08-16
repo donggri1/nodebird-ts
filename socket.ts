@@ -24,7 +24,6 @@ export default (server: HttpServer, app: any, sessionMiddleware: session.Store) 
     io.on('connection', async (socket: any) => {
         console.log('새로운 클라이언트 접속', socket.id);
         const req = socket.request;
-        console.log(req.session);
 
         try {
 
@@ -36,7 +35,6 @@ export default (server: HttpServer, app: any, sessionMiddleware: session.Store) 
                 }
 
                 const user = await User.findOne({ where: { id: userId } });
-                console.log(user, '사용자 정보');
                 if (!user) {
                     socket.emit('error', '사용자 정보를 찾을 수 없습니다.');
                     socket.disconnect();

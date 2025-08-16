@@ -7,9 +7,6 @@
     <list default="true" id="c52ef3f9-6359-4515-b9a4-41021b6fa65a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GEMINI.md" beforeDir="false" afterPath="$PROJECT_DIR$/GEMINI.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/socket.ts" beforeDir="false" afterPath="$PROJECT_DIR$/socket.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/views/layout.html" afterDir="false" />
     </list>
@@ -101,7 +98,8 @@
       <workItem from="1755245941888" duration="7489000" />
       <workItem from="1755267769857" duration="691000" />
       <workItem from="1755268850586" duration="1115000" />
-      <workItem from="1755270114663" duration="1817000" />
+      <workItem from="1755270114663" duration="1908000" />
+      <workItem from="1755307404411" duration="2573000" />
     </task>
     <servers />
   </component>
